@@ -1,0 +1,13 @@
+---
+- 
+  hosts: all
+  become: true
+  tasks:
+      - name: create a  container
+        docker_container:
+          name: nodejs
+          image: prajawalsharma/node
+          state: present
+          recreate: yes
+          exposed_ports:
+            - 5000
