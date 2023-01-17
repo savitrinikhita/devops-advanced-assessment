@@ -3,10 +3,11 @@ pipeline {
     environment {
         dockerImage = ''
     }
+    tools {nodejs "NODE JS"}
     stages {
         stage('pull the code') {
             steps {
-               git branch: 'main', credentialsId: '92f27e9d-788a-4836-a645-3642abe33d1c', url: 'git@github.com:PrajawalSharma/nodejs.git'
+               git branch: 'main', credentialsId: 'git-key', url: 'git@github.com:savitrinikhita/devops-advanced-assessment.git'
             }
         }
         stage('Build and Install') {
@@ -18,38 +19,42 @@ pipeline {
             }
             }
         }
-        stage('Sonar'){
-            steps {
+//         stage('Sonar'){
+//             steps {
                 
-                sh '''
-               sonar-scanner \
-              -Dsonar.projectKey=sonar \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=http://20.169.251.252:9000 \
-              -Dsonar.login=sqp_64c5f1c391bee41a7eb646f895cd86236568d1c8'''
-            }
-        }
-        stage('Dcoker Build') {
-            steps {
-                sh 'docker build -t prajawalsharma/node:latest .'
-            }
-        }
-        stage("push to registery"){
-            steps{
-                // This step should not normally be used in your script. Consult the inline help for details.
-                sh "docker login -u prajawalsharma -p Docker"
-                sh "docker push prajawalsharma/node:latest"
-            }
-        }
-        stage('Ansible install docker'){
-            steps{
-                 ansiblePlaybook credentialsId: 'ansible-0key', disableHostKeyChecking: true, inventory: 'ansible/dev.inv', playbook: 'ansible/install-docker.yml'
-            }
-        }
-        stage('Start the docker container'){
-            steps{
-                 ansiblePlaybook credentialsId: 'ansible-0key', disableHostKeyChecking: true, inventory: 'ansible/dev.inv', playbook: 'ansible/install-image.yml'
-            }
-        }
+//                 sh '''
+//               sonar-scanner \
+//   -Dsonar.projectKey=devops-advanced \
+//   -Dsonar.sources=. \
+//   -Dsonar.host.url=http://172.173.255.207:9000 \
+//   -Dsonar.login=sqp_859202052292585fb3d0a59667d07bc5428e1bb6'''
+//             }
+//         }
+         stage('Docker Build') {
+             steps {
+                 sh 'docker build -t devops/nodejs:latest .'
+             }
+         }
+         stage("push to registery"){
+             steps{
+                 script {
+                    sh "docker login -u 180030469 -p Nanivanam@24"
+                sh "docker push devops/nodejs:latest"
+                   
+                       }
+                     }
+                 }
+             
+        
+         stage('Ansible install docker'){
+             steps{
+                  ansiblePlaybook credentialsId: 'git-token', disableHostKeyChecking: true, inventory: 'ansible/dev.inv', playbook: 'ansible/install-docker.yml'
+             }
+         }
+         stage('Start the docker container'){
+             steps{
+                  ansiblePlaybook credentialsId: 'git-token', disableHostKeyChecking: true, inventory: 'ansible/dev.inv', playbook: 'ansible/install-image.yml'
+             }
+         }
     }
 }
