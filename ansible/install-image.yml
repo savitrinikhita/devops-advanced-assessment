@@ -6,7 +6,7 @@
       - name: create a container
         docker_container:
           name: nodejs
-          image: devops/nodejs
+          image: 180030469/devops/nodejs
           state: present
           recreate: yes
           exposed_ports:
